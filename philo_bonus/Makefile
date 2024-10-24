@@ -1,4 +1,4 @@
-NAME       = philo
+NAME       = philo_bonus
 CC         = cc
 CFLAGS     = -Wall -Wextra -Werror $(INCLUDES)
 INCLUDES   = -I include
