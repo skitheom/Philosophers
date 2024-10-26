@@ -53,4 +53,8 @@ dkms.conf
 
 *.pdf
 .gitignore
-
+philo
+philo_bonus
+.vscode
+obj/*
+*/obj

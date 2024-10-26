@@ -1,5 +1,6 @@
 NAME       = philo
 CC         = cc
+# CFLAGS     = -Wall -Wextra -Werror $(INCLUDES) -lpthread
 CFLAGS     = -Wall -Wextra -Werror $(INCLUDES)
 INCLUDES   = -I include
 SRCS       = $(wildcard src/*.c)
@@ -23,7 +24,7 @@ fclean: clean
 
 re: fclean all
 
-debug: CFLAGS += -g -fsanitize=address
+debug: CFLAGS += -g -fsanitize=thread
 debug: re
 
 .PHONY: all clean fclean re debug

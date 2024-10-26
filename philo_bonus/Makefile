@@ -1,6 +1,6 @@
 NAME       = philo_bonus
 CC         = cc
-CFLAGS     = -Wall -Wextra -Werror $(INCLUDES)
+CFLAGS     = -Wall -Wextra -Werror $(INCLUDES) -lpthread
 INCLUDES   = -I include
 SRCS       = $(wildcard src/*.c)
 OBJS_DIR   = obj
@@ -23,7 +23,7 @@ fclean: clean
 
 re: fclean all
 
-debug: CFLAGS += -g -fsanitize=address
+debug: CFLAGS += -g -fsanitize=thread
 debug: re
 
 .PHONY: all clean fclean re debug

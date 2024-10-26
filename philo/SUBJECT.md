@@ -47,3 +47,4 @@
    - If there is only **one philosopher**, there should only be **one fork** on the table.
 3. The forks must be protected using **mutexes** to prevent two philosophers from taking the same fork at the same time.
 
+
