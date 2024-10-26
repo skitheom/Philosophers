@@ -19,6 +19,17 @@ void	print_error(char *str)
 
 void	cleanup_ctrl(t_ctrl *ctrl)
 {
+	int	i;
+
+	i = 0;
+	while (i < ctrl->config->num_of_philos)
+	{
+		pthread_mutex_destroy(&ctrl->forks[i]);
+		i++;
+	}
+	pthread_mutex_destroy(&ctrl->dead_lock);
+	pthread_mutex_destroy(&ctrl->meal_lock);
+	pthread_mutex_destroy(&ctrl->write_lock);
 	if (ctrl->config)
 		free(ctrl->config);
 	if (ctrl->philos)
