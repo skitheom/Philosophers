@@ -52,7 +52,14 @@ typedef struct s_ctrl
 	bool			dead_flag;
 }					t_ctrl;
 
-# define ERR_USAGE "Usage: ./philo num_of_philo time_to_die time_to_eat time_to_sleep (num_of_times_each_philo_must_eat)\n"
+# define ERR_USAGE "Usage: ./philo num_of_philo die eat sleep (num_eating)\n"
 # define ERR_INVALID_INPUT "Error: Invalid input value\n"
 # define ERR_MALLOC "Error: Memory allocation failed\n"
+
+bool				init_ctrl(t_ctrl *ctrl, int argc, const char **argv);
+void				print_error(char *str);
+void				cleanup_ctrl(t_ctrl *ctrl);
+int					convert_input_to_num(const char *str);
+int64_t				get_current_time(void);
+
 #endif
