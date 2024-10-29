@@ -1,13 +1,7 @@
 #include "philo.h"
 
-static t_shared_config	*init_shared_config(int argc, const char **argv)
+static void	setup_config(t_config *config, int argc, const char **argv)
 {
-	t_shared_config	*config;
-
-	config = malloc(sizeof(t_shared_config));
-	if (!config)
-		return (NULL);
-	memset(config, 0, sizeof(t_shared_config));
 	config->num_of_philos = convert_input_to_num(argv[1]);
 	config->time_to_die = convert_input_to_num(argv[2]);
 	config->time_to_eat = convert_input_to_num(argv[3]);
@@ -16,51 +10,65 @@ static t_shared_config	*init_shared_config(int argc, const char **argv)
 		config->num_of_times_to_eat = convert_input_to_num(argv[5]);
 	else
 		config->num_of_times_to_eat = -1;
-	return (config);
 }
 
-static bool	init_philo_struct(t_ctrl *ctrl)
+static bool	init_mutex_forks(t_ctrl *ctrl)
 {
-	ctrl->philos = malloc(sizeof(t_philo) * ctrl->config->num_of_philos);
-	if (!ctrl->philos)
-		return (false);
-	memset(ctrl->philos, 0, sizeof(t_philo) * ctrl->config->num_of_philos);
-	ctrl->forks = malloc(sizeof(pthread_mutex_t) * ctrl->config->num_of_philos);
+	int	i;
+
 	if (!ctrl->forks)
-	{
-		free(ctrl->philos);
 		return (false);
+	i = 0;
+	while (i < ctrl->config.num_of_philos)
+	{
+		if (pthread_mutex_init(&ctrl->forks[i], NULL) != 0)
+		{
+			while (--i >= 0)
+				pthread_mutex_destroy(&ctrl->forks[i]);
+			return (false);
+		}
+		i++;
 	}
-	memset(ctrl->forks, 0, sizeof(pthread_mutex_t)
-		* ctrl->config->num_of_philos);
 	return (true);
 }
 
-static void	setup_philo_helper(t_ctrl *ctrl, t_philo *philo)
+static bool	init_mutex_locks(t_ctrl *ctrl)
 {
-	philo->config = ctrl->config;
-	philo->meals_count = 0;
-	philo->eating = false;
-	philo->dead_lock = &(ctrl->dead_lock);
-	philo->meal_lock = &(ctrl->meal_lock);
-	philo->write_lock = &(ctrl->write_lock);
-	philo->dead_flag = &(ctrl->dead_flag);
+	if (pthread_mutex_init(&ctrl->dead_lock, NULL) != 0)
+	{
+		destroy_mutex_forks(ctrl);
+		return (false);
+	}
+	if (pthread_mutex_init(&ctrl->meal_lock, NULL) != 0)
+	{
+		destroy_mutex_forks(ctrl);
+		pthread_mutex_destroy(&ctrl->dead_lock);
+		return (false);
+	}
+	if (pthread_mutex_init(&ctrl->write_lock, NULL) != 0)
+	{
+		destroy_mutex_forks(ctrl);
+		pthread_mutex_destroy(&ctrl->dead_lock);
+		pthread_mutex_destroy(&ctrl->meal_lock);
+		return (false);
+	}
+	return (true);
 }
 
-static bool	setup_philo_struct(t_ctrl *ctrl)
+static bool	setup_philos(t_ctrl *ctrl)
 {
-	int		num_of_philos;
-	int		i;
-	int64_t	current_time;
+	const int64_t	current_time = get_current_time();
+	const int		num_of_philos = ctrl->config.num_of_philos;
+	int				i;
 
-	current_time = get_current_time();
 	if (current_time < 0)
 		return (false);
-	num_of_philos = ctrl->config->num_of_philos;
 	i = 0;
 	while (i < num_of_philos)
 	{
 		ctrl->philos[i].id = i + 1;
+		ctrl->philos[i].eaten_meals_count = 0;
+		ctrl->philos[i].eating = false;
 		ctrl->philos[i].start_time = current_time;
 		ctrl->philos[i].last_meal = current_time;
 		ctrl->philos[i].left_fork = &(ctrl->forks[i]);
@@ -68,7 +76,7 @@ static bool	setup_philo_struct(t_ctrl *ctrl)
 			ctrl->philos[i].right_fork = &(ctrl->forks[num_of_philos - 1]);
 		else
 			ctrl->philos[i].right_fork = &(ctrl->forks[i - 1]);
-		setup_philo_helper(ctrl, &(ctrl->philos[i]));
+		ctrl->philos[i].ctrl = ctrl;
 		i++;
 	}
 	return (true);
@@ -76,21 +84,21 @@ static bool	setup_philo_struct(t_ctrl *ctrl)
 
 bool	init_ctrl(t_ctrl *ctrl, int argc, const char **argv)
 {
-	ctrl->config = init_shared_config(argc, argv);
-	if (!ctrl->config)
+	setup_config(&ctrl->config, argc, argv);
+	ctrl->philos = malloc(sizeof(t_philo) * ctrl->config.num_of_philos);
+	if (!ctrl->philos)
 		return (false);
-	if (!init_philo_struct(ctrl))
+	ctrl->forks = malloc(sizeof(pthread_mutex_t) * ctrl->config.num_of_philos);
+	if (!ctrl->forks || !init_mutex_forks(ctrl) || !init_mutex_locks(ctrl))
 	{
-		print_error(ERR_MALLOC);
-		free(ctrl->config);
+		cleanup_memory(ctrl);
 		return (false);
 	}
-	if (!setup_philo_struct(ctrl))
+	if (!setup_philos(ctrl))
 	{
-		free(ctrl->config);
-		free(ctrl->philos);
-		free(ctrl->forks);
+		cleanup_ctrl(ctrl);
 		return (false);
 	}
+	ctrl->dead_flag = false;
 	return (true);
 }
