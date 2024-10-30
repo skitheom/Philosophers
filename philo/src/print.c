@@ -65,18 +65,15 @@ static bool	print_msg(t_ctrl *ctrl, char *time_str, char *id_str,
 
 bool	display_philo_msg(t_philo *philo, const char *str)
 {
-	int64_t	timestamp;
+	size_t	timestamp;
 	char	*time_str;
 	char	*id_str;
 	bool	result;
 
-	timestamp = get_current_time();
-	if (timestamp == -1)
-	{
-		safe_print(philo->ctrl, 2, ERR_GET_TIME);
+	timestamp = get_current_time(philo->ctrl);
+	if (timestamp == SIZE_MAX)
 		return (false);
-	}
-	time_str = ft_itoa((int)timestamp);
+	time_str = ft_itoa((int)timestamp); // TODO: ft_utoaを作る
 	id_str = ft_itoa(philo->id);
 	if (!time_str || !id_str)
 	{

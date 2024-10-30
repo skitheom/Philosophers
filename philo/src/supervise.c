@@ -1,8 +1,8 @@
 #include "philo.h"
 
-static bool	confirm_death(t_philo *philo, int time_to_die)
+static bool	confirm_death(t_philo *philo, size_t time_to_die)
 {
-	int64_t	current_time;
+	size_t	current_time;
 	bool	is_starving;
 
 	if (philo->eating)
@@ -10,9 +10,10 @@ static bool	confirm_death(t_philo *philo, int time_to_die)
 	is_starving = false;
 	if (try_lock(philo->ctrl, &philo->ctrl->meal_lock))
 	{
-		current_time = get_current_time();
-		if (current_time != -1)
-			is_starving = current_time - philo->last_meal >= time_to_die;
+		current_time = get_current_time(philo->ctrl);
+		if (current_time - philo->last_meal >= time_to_die
+			&& current_time != SIZE_MAX)
+			is_starving = true;
 		pthread_mutex_unlock(&philo->ctrl->meal_lock);
 		return (is_starving);
 	}
@@ -22,10 +23,10 @@ static bool	confirm_death(t_philo *philo, int time_to_die)
 
 static bool	all_healthy(t_ctrl *ctrl)
 {
-	t_philo		*philos;
-	const int	time_to_die = ctrl->config.time_to_die;
-	const int	num_of_philos = ctrl->config.num_of_philos;
-	int			i;
+	t_philo			*philos;
+	const size_t	time_to_die = ctrl->config.time_to_die;
+	const int		num_of_philos = ctrl->config.num_of_philos;
+	int				i;
 
 	if (!is_healthy(ctrl))
 		return (false);

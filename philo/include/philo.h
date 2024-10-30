@@ -16,7 +16,7 @@
 typedef struct s_config
 {
 	int					num_of_philos;
-	int					time_to_die;
+	size_t				time_to_die;
 	int					time_to_eat;
 	int					time_to_sleep;
 	int					num_of_times_to_eat;
@@ -113,8 +113,8 @@ bool					launch_threads(t_ctrl *ctrl, t_philo *philos,
 size_t					ft_strlen(const char *str);
 size_t					ft_strlcpy(char *dest, const char *src, size_t size);
 size_t					ft_strlcat(char *dest, const char *src, size_t size);
-int64_t					get_current_time(void);
-bool					philo_sleep(t_ctrl *ctrl, int64_t time_to_sleep);
+size_t					get_current_time(t_ctrl *ctrl);
+void					philo_sleep(t_ctrl *ctrl, size_t time_to_sleep);
 #endif
 
 /*

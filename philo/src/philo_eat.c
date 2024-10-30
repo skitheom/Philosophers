@@ -7,7 +7,7 @@ static void	update_meal(t_philo *philo)
 	if (try_lock(philo->ctrl, &philo->ctrl->meal_lock))
 	{
 		display_philo_msg(philo, MSG_EAT);
-		philo->last_meal = get_current_time();
+		philo->last_meal = get_current_time(philo->ctrl);
 		philo->eaten_meals_count++;
 		pthread_mutex_unlock(&philo->ctrl->meal_lock);
 	}

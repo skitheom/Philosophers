@@ -62,11 +62,11 @@ static bool	init_mutex_forks(t_ctrl *ctrl)
 
 static bool	setup_philos(t_ctrl *ctrl)
 {
-	const size_t	current_time = get_current_time();
+	const size_t	current_time = get_current_time(ctrl);
 	const int		num_of_philos = ctrl->config.num_of_philos;
 	int				i;
 
-	if (current_time < 0)
+	if (current_time == SIZE_MAX)
 		return (false);
 	i = 0;
 	while (i < num_of_philos)
