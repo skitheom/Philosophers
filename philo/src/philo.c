@@ -43,7 +43,7 @@ void	*philo_routine(void *ptr)
 	t_philo	*philo;
 
 	philo = (t_philo *)ptr;
-	if (philo->id % 2 == 0) // あとでみなおし
+	if (philo->id % 2 == 0)
 		philo_sleep(philo->ctrl, 10);
 	while (health_check(philo))
 	{

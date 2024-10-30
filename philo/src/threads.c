@@ -36,7 +36,6 @@ static bool	launch_philos(t_philo *philos, int num_of_philos)
 	return (wait_for_philos(philos, num_of_philos));
 }
 
-// TODO: dead flagの管理は後で考える
 bool	launch_threads(t_ctrl *ctrl, t_philo *philos, int num_of_philos)
 {
 	pthread_t	supervisor;

@@ -50,7 +50,7 @@ void	eat(t_philo *philo)
 		}
 		else
 		{
-			usleep(500);
+			usleep(20);
 			if (try_eat(philo, philo->right_fork, philo->left_fork))
 				return ;
 		}

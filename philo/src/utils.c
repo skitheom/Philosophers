@@ -57,7 +57,7 @@ size_t	get_current_time(t_ctrl *ctrl)
 		set_error_flag_on(ctrl);
 		return (SIZE_MAX);
 	}
-	return ((size_t)tv.tv_sec * 1000) + (tv.tv_usec / 1000);
+	return (((size_t)tv.tv_sec * 1000) + (tv.tv_usec / 1000));
 }
 
 void	philo_sleep(t_ctrl *ctrl, size_t time_to_sleep)
