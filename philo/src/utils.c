@@ -47,28 +47,36 @@ size_t	ft_strlcat(char *dest, const char *src, size_t size)
 	return (destlen + srclen);
 }
 
-int64_t	get_current_time(void)
+size_t	get_current_time(void)
 {
 	struct timeval	tv;
 
 	if (gettimeofday(&tv, NULL) == -1)
+	{
 		return (-1);
-	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
+	}
+	return ((int64_t)tv.tv_sec * 1000) + (tv.tv_usec / 1000);
 }
 
-bool	philo_sleep(int64_t time_to_sleep)
+bool	philo_sleep(t_ctrl *ctrl, int64_t time_to_sleep)
 {
 	int64_t	start;
 	int64_t	now;
 
 	start = get_current_time();
 	if (start == -1)
+	{
+		set_error_flag_on(ctrl);
 		return (false);
+	}
 	while (true)
 	{
 		now = get_current_time();
 		if (now == -1)
+		{
+			set_error_flag_on(ctrl);
 			return (false);
+		}
 		if (now - start >= time_to_sleep)
 			break ;
 		usleep(PHILO_SLEEP_INTERVAL);

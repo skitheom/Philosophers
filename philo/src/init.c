@@ -62,7 +62,7 @@ static bool	init_mutex_forks(t_ctrl *ctrl)
 
 static bool	setup_philos(t_ctrl *ctrl)
 {
-	const int64_t	current_time = get_current_time();
+	const size_t	current_time = get_current_time();
 	const int		num_of_philos = ctrl->config.num_of_philos;
 	int				i;
 

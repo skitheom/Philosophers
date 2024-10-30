@@ -33,6 +33,7 @@ static bool	validate_argv(int argc, const char **argv)
 			print_error(ERR_INVALID_INPUT);
 			return (false);
 		}
+		i++;
 	}
 	return (i == argc);
 }

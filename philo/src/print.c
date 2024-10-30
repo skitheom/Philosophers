@@ -18,17 +18,13 @@ bool	safe_print(t_ctrl *ctrl, int fd, const char *str)
 		{
 			result = write(fd, str, ft_strlen(str));
 			pthread_mutex_unlock(&ctrl->write_lock);
-			break ;
+			return (result != -1);
 		}
 		usleep(USLEEP_RETRY_INTERVAL);
 		i++;
 	}
-	if (result == -1)
-	{
-		print_error(ERR_WRITE);
-		return (false);
-	}
-	return (true);
+	print_error(ERR_WRITE);
+	return (false);
 }
 
 static char	*format_msg(char *time_str, char *id, const char *str)

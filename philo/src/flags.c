@@ -20,7 +20,7 @@ bool	set_error_flag_on(t_ctrl *ctrl)
 	return (false);
 }
 
-bool	get_error_flag(t_ctrl *ctrl, bool *lock_success)
+static bool	get_error_flag(t_ctrl *ctrl, bool *lock_success)
 {
 	bool	error_state;
 	int		i;
@@ -63,7 +63,7 @@ bool	set_dead_flag_on(t_ctrl *ctrl)
 	return (false);
 }
 
-bool	get_dead_flag(t_ctrl *ctrl, bool *lock_success)
+static bool	get_dead_flag(t_ctrl *ctrl, bool *lock_success)
 {
 	bool	dead_state;
 	int		i;
@@ -84,4 +84,22 @@ bool	get_dead_flag(t_ctrl *ctrl, bool *lock_success)
 	safe_print(ctrl, 2, ERR_DEAD_FLAG);
 	*lock_success = false;
 	return (false);
+}
+
+bool	is_healthy(t_ctrl *ctrl)
+{
+	bool	check_err_success;
+	bool	check_dead_success;
+
+	check_err_success = false;
+	check_dead_success = false;
+	if (get_error_flag(ctrl, &check_err_success) || get_dead_flag(ctrl,
+			&check_dead_success))
+		return (false);
+	if (!check_err_success || !check_dead_success)
+	{
+		set_error_flag_on(ctrl);
+		return (false);
+	}
+	return (true);
 }
