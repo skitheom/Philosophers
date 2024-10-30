@@ -1,8 +1,8 @@
 #include "philo.h"
 
-int	ft_strlen(char *str)
+size_t	ft_strlen(const char *str)
 {
-	int	i;
+	size_t	i;
 
 	if (!str)
 		return (0);
@@ -12,45 +12,39 @@ int	ft_strlen(char *str)
 	return (i);
 }
 
-void	print_error(char *str)
+size_t	ft_strlcpy(char *dest, const char *src, size_t size)
 {
-	write(2, str, ft_strlen(str));
-}
+	size_t	srclen;
+	size_t	i;
 
-void	cleanup_ctrl(t_ctrl *ctrl)
-{
-	int	i;
-
-	i = 0;
-	while (i < ctrl->config->num_of_philos)
+	srclen = ft_strlen(src);
+	if (size != 0)
 	{
-		pthread_mutex_destroy(&ctrl->forks[i]);
-		i++;
+		i = 0;
+		while (*src && i + 1 < size)
+		{
+			*(dest++) = *(src++);
+			i++;
+		}
+		*dest = '\0';
 	}
-	pthread_mutex_destroy(&ctrl->dead_lock);
-	pthread_mutex_destroy(&ctrl->meal_lock);
-	pthread_mutex_destroy(&ctrl->write_lock);
-	if (ctrl->config)
-		free(ctrl->config);
-	if (ctrl->philos)
-		free(ctrl->philos);
-	if (ctrl->forks)
-		free(ctrl->forks);
+	return (srclen);
 }
 
-int	convert_input_to_num(const char *str)
+size_t	ft_strlcat(char *dest, const char *src, size_t size)
 {
-	char	*endptr;
-	long	value;
+	size_t	destlen;
+	size_t	srclen;
 
-	if (!str || !*str)
-		return (-1);
-	endptr = NULL;
-	errno = 0;
-	value = strtol(str, &endptr, 10);
-	if (errno != 0 || *endptr != '\0' || value > INT_MAX || value < 0)
-		return (-1);
-	return ((int)value);
+	destlen = 0;
+	if (dest)
+		destlen = ft_strlen(dest);
+	if (size <= destlen)
+		return (size + ft_strlen(src));
+	while (*dest)
+		dest++;
+	srclen = ft_strlcpy(dest, src, size - destlen);
+	return (destlen + srclen);
 }
 
 int64_t	get_current_time(void)
@@ -58,9 +52,26 @@ int64_t	get_current_time(void)
 	struct timeval	tv;
 
 	if (gettimeofday(&tv, NULL) == -1)
-	{
-		print_error("Error: gettimeofday failed\n");
 		return (-1);
-	}
 	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
+}
+
+bool	philo_sleep(int64_t time_to_sleep)
+{
+	int64_t	start;
+	int64_t	now;
+
+	start = get_current_time();
+	if (start == -1)
+		return (false);
+	while (true)
+	{
+		now = get_current_time();
+		if (now == -1)
+			return (false);
+		if (now - start >= time_to_sleep)
+			break ;
+		usleep(PHILO_SLEEP_INTERVAL);
+	}
+	return (true);
 }
