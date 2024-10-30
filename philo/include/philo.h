@@ -78,6 +78,8 @@ void					*supervise(void *ptr);
 bool					try_lock(t_ctrl *ctrl, pthread_mutex_t *lock);
 void					eat(t_philo *philo);
 void					*philo_routine(void *ptr);
+bool					health_check(t_philo *philo);
+bool					confirm_death(t_philo *philo, size_t time_to_die);
 
 /* cleanup.c */
 void					destroy_mutex_locks(t_ctrl *ctrl);
@@ -91,8 +93,8 @@ bool					set_error_flag_on(t_ctrl *ctrl);
 bool					set_dead_flag_on(t_ctrl *ctrl);
 bool					is_healthy(t_ctrl *ctrl);
 
-/* ft_itoa.c */
 char					*ft_itoa(int n);
+char					*ft_utoa(size_t num);
 
 /* init.c */
 bool					init_ctrl(t_ctrl *ctrl, int argc, const char **argv);
@@ -103,7 +105,7 @@ int						convert_input_to_num(const char *str);
 /* print.c */
 bool					print_error(const char *str);
 bool					safe_print(t_ctrl *ctrl, int fd, const char *str);
-bool					display_philo_msg(t_philo *philo, const char *str);
+void					display_philo_msg(t_philo *philo, const char *str);
 
 /* threads.c */
 bool					launch_threads(t_ctrl *ctrl, t_philo *philos,

@@ -46,44 +46,41 @@ static char	*format_msg(char *time_str, char *id, const char *str)
 	return (dest);
 }
 
-static bool	print_msg(t_ctrl *ctrl, char *time_str, char *id_str,
+static void	print_msg(t_ctrl *ctrl, char *time_str, char *id_str,
 		const char *str)
 {
 	char	*msg;
-	bool	result;
 
 	msg = format_msg(time_str, id_str, str);
 	if (!msg)
 	{
 		safe_print(ctrl, 2, ERR_PHILO_MSG);
-		return (false);
+		return ;
 	}
-	result = safe_print(ctrl, 1, msg);
+	safe_print(ctrl, 1, msg);
 	xfree(msg);
-	return (result);
 }
 
-bool	display_philo_msg(t_philo *philo, const char *str)
+void	display_philo_msg(t_philo *philo, const char *str)
 {
 	size_t	timestamp;
 	char	*time_str;
 	char	*id_str;
-	bool	result;
 
 	timestamp = get_current_time(philo->ctrl);
 	if (timestamp == SIZE_MAX)
-		return (false);
-	time_str = ft_itoa((int)timestamp); // TODO: ft_utoaを作る
+		return ;
+	time_str = ft_utoa(timestamp);
 	id_str = ft_itoa(philo->id);
 	if (!time_str || !id_str)
 	{
 		xfree(time_str);
 		xfree(id_str);
 		safe_print(philo->ctrl, 2, ERR_PHILO_MSG);
-		return (false);
+		return ;
 	}
-	result = print_msg(philo->ctrl, time_str, id_str, str);
+	if (is_healthy(philo->ctrl))
+		print_msg(philo->ctrl, time_str, id_str, str);
 	xfree(time_str);
 	xfree(id_str);
-	return (result);
 }

@@ -47,5 +47,6 @@ char	*ft_itoa(int n)
 	if (!str)
 		return (NULL);
 	num_to_str(num, str, len, is_negative);
+	str[len + is_negative] = '\0';
 	return (str);
 }

@@ -1,6 +1,6 @@
 #include "philo.h"
 
-static bool	confirm_death(t_philo *philo, size_t time_to_die)
+bool	confirm_death(t_philo *philo, size_t time_to_die)
 {
 	size_t	current_time;
 	bool	is_starving;
@@ -28,8 +28,6 @@ static bool	all_healthy(t_ctrl *ctrl)
 	const int		num_of_philos = ctrl->config.num_of_philos;
 	int				i;
 
-	if (!is_healthy(ctrl))
-		return (false);
 	philos = ctrl->philos;
 	i = 0;
 	while (i < num_of_philos)
@@ -67,8 +65,8 @@ static bool	still_hungry(t_ctrl *ctrl)
 	const int	num_of_philos = ctrl->config.num_of_philos;
 	int			i;
 
-	if (!is_healthy(ctrl))
-		return (false);
+	if (num_of_times_to_eat == -1)
+		return (true);
 	philos = ctrl->philos;
 	i = 0;
 	while (i < num_of_philos)
@@ -77,6 +75,7 @@ static bool	still_hungry(t_ctrl *ctrl)
 			return (true);
 		i++;
 	}
+	set_dead_flag_on(ctrl);
 	return (false);
 }
 
@@ -87,8 +86,21 @@ void	*supervise(void *ptr)
 	ctrl = (t_ctrl *)ptr;
 	while (true)
 	{
-		if (!all_healthy(ctrl) || !still_hungry(ctrl))
+		if (!is_healthy(ctrl))
+		{
+			safe_print(ctrl, 1, "Fin - Flag activated\n");
 			break ;
+		}
+		if (!all_healthy(ctrl))
+		{
+			safe_print(ctrl, 1, "Fin - Unhealthy\n");
+			break ;
+		}
+		if (!still_hungry(ctrl))
+		{
+			safe_print(ctrl, 1, "Fin - Not hungry\n");
+			break ;
+		}
 	}
 	return (ptr);
 }

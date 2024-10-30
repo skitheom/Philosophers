@@ -98,6 +98,7 @@ bool	is_healthy(t_ctrl *ctrl)
 		return (false);
 	if (!check_err_success || !check_dead_success)
 	{
+		safe_print(ctrl, 2, "<< Set Error Flag at is_healthy() >>\n");
 		set_error_flag_on(ctrl);
 		return (false);
 	}
