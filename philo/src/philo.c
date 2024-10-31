@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philo.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/10/31 01:14:44 by sakitaha          #+#    #+#             */
+/*   Updated: 2024/10/31 15:26:40 by sakitaha         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo.h"
 
 bool	try_lock(t_ctrl *ctrl, pthread_mutex_t *lock)
@@ -44,7 +56,7 @@ void	*philo_routine(void *ptr)
 
 	philo = (t_philo *)ptr;
 	if (philo->id % 2 == 0)
-		philo_sleep(philo->ctrl, 10);
+		philo_sleep(philo->ctrl, DELAY);
 	while (health_check(philo))
 	{
 		eat(philo);

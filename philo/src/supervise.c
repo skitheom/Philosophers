@@ -1,11 +1,24 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   supervise.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/10/31 01:14:52 by sakitaha          #+#    #+#             */
+/*   Updated: 2024/10/31 02:34:13 by sakitaha         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo.h"
 
 bool	confirm_death(t_philo *philo, size_t time_to_die)
 {
 	size_t	current_time;
 	bool	is_starving;
+	bool	lock_success;
 
-	if (philo->eating)
+	if (get_eat_flag(philo, &lock_success)) // TODO: あってる？
 		return (false);
 	is_starving = false;
 	if (try_lock(philo->ctrl, &philo->ctrl->meal_lock))
@@ -86,19 +99,8 @@ void	*supervise(void *ptr)
 	ctrl = (t_ctrl *)ptr;
 	while (true)
 	{
-		if (!is_healthy(ctrl))
+		if (!is_healthy(ctrl) || !all_healthy(ctrl) || !still_hungry(ctrl))
 		{
-			safe_print(ctrl, 1, "Fin - Flag activated\n");
-			break ;
-		}
-		if (!all_healthy(ctrl))
-		{
-			safe_print(ctrl, 1, "Fin - Unhealthy\n");
-			break ;
-		}
-		if (!still_hungry(ctrl))
-		{
-			safe_print(ctrl, 1, "Fin - Not hungry\n");
 			break ;
 		}
 	}

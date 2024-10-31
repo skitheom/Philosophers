@@ -1,4 +1,39 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   flags.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/10/31 01:14:16 by sakitaha          #+#    #+#             */
+/*   Updated: 2024/10/31 02:28:41 by sakitaha         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo.h"
+
+bool	get_eat_flag(t_philo *philo, bool *lock_success)
+{
+	bool	eating_state;
+	int		i;
+
+	i = 0;
+	while (i < MAX_RETRY)
+	{
+		if (pthread_mutex_lock(&philo->ctrl->meal_lock) == 0)
+		{
+			eating_state = philo->eating;
+			pthread_mutex_unlock(&philo->ctrl->meal_lock);
+			*lock_success = true;
+			return (eating_state);
+		}
+		usleep(USLEEP_RETRY_INTERVAL);
+		i++;
+	}
+	safe_print(philo->ctrl, 2, ERR_ERROR_FLAG);
+	*lock_success = false;
+	return (false);
+}
 
 bool	set_error_flag_on(t_ctrl *ctrl)
 {

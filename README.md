@@ -21,7 +21,7 @@
   - 全体のシミュレーションは死の回避を目的とする
 
 
-### 使用を許可された関数・ライブラリ
+### 使用許可関数
 
 - **必須部分**:
   - `memset`
@@ -39,7 +39,7 @@
   - `pthread_mutex_lock`
   - `pthread_mutex_unlock`
 
-- **ボーナス部分**（全ての必須要件を満たしている場合に評価される）:
+- **ボーナス部分**:
   - 上記に加えて以下の関数:
     - `fork`
     - `kill`
@@ -51,7 +51,8 @@
     - `sem_wait`
     - `sem_unlink`
 
-- **参考書籍**:
+- **参考資料**:
   - **Operating Systems: Three Easy Pieces**（OSTEP）
   - **The C Programming Language** by Brian W. Kernighan and Dennis M. Ritchie
   - **Advanced Programming in the UNIX Environment** by W. Richard Stevens
+  - [Thread-safety and POSIX.1](https://unix.org/whitepapers/reentrant.html)

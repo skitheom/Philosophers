@@ -1,4 +1,22 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/10/31 01:14:38 by sakitaha          #+#    #+#             */
+/*   Updated: 2024/10/31 16:52:52 by sakitaha         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo.h"
+#include <libc.h>
+
+__attribute__((destructor)) static void destructor()
+{
+	system("leaks -q philo");
+}
 
 int	convert_input_to_num(const char *str)
 {

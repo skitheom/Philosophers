@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   print.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/10/31 01:14:48 by sakitaha          #+#    #+#             */
+/*   Updated: 2024/10/31 03:29:04 by sakitaha         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo.h"
 
 bool	print_error(const char *str)
@@ -61,26 +73,50 @@ static void	print_msg(t_ctrl *ctrl, char *time_str, char *id_str,
 	xfree(msg);
 }
 
-void	display_philo_msg(t_philo *philo, const char *str)
+void	*output_routine(void *ptr)
 {
+	t_msg	*msg;
 	size_t	timestamp;
 	char	*time_str;
 	char	*id_str;
 
-	timestamp = get_current_time(philo->ctrl);
+	msg = (t_msg *)ptr;
+	timestamp = get_current_time(msg->philo->ctrl);
 	if (timestamp == SIZE_MAX)
-		return ;
+	{
+		xfree(msg);
+		return (NULL);
+	}
 	time_str = ft_utoa(timestamp);
-	id_str = ft_itoa(philo->id);
+	id_str = ft_itoa(msg->philo->id);
 	if (!time_str || !id_str)
 	{
 		xfree(time_str);
 		xfree(id_str);
-		safe_print(philo->ctrl, 2, ERR_PHILO_MSG);
-		return ;
+		xfree(msg);
+		safe_print(msg->philo->ctrl, 2, ERR_PHILO_MSG);
+		return (NULL);
 	}
-	if (is_healthy(philo->ctrl))
-		print_msg(philo->ctrl, time_str, id_str, str);
+	print_msg(msg->philo->ctrl, time_str, id_str, msg->str);
 	xfree(time_str);
 	xfree(id_str);
+	xfree(msg);
+	return (NULL);
+}
+
+void	display_philo_msg(t_philo *philo, const char *str)
+{
+	pthread_t	output_thread;
+	t_msg		*msg;
+
+	msg = malloc(sizeof(t_msg));
+	if (!msg)
+	{
+		set_error_flag_on(philo->ctrl);
+		return ;
+	}
+	msg->philo = philo;
+	msg->str = str;
+	pthread_create(&output_thread, NULL, output_routine, (void *)msg);
+	pthread_detach(output_thread);
 }
