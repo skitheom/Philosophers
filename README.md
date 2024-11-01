@@ -56,3 +56,7 @@
   - **The C Programming Language** by Brian W. Kernighan and Dennis M. Ritchie
   - **Advanced Programming in the UNIX Environment** by W. Richard Stevens
   - [Thread-safety and POSIX.1](https://unix.org/whitepapers/reentrant.html)
+
+https://www.evernote.com/shard/s97/client/snv?noteGuid=76e446df-1c78-45b6-b19b-696912d50f7e&noteKey=c932fea5a09fd302&sn=https%3A%2F%2Fwww.evernote.com%2Fshard%2Fs97%2Fsh%2F76e446df-1c78-45b6-b19b-696912d50f7e%2Fc932fea5a09fd302&title=Philosophers%25E3%2581%25A7%25E5%258F%2582%25E8%2580%2583%25E3%2581%25AB%25E3%2581%2597%25E3%2581%259F%25E3%2583%25AA%25E3%2583%25B3%25E3%2582%25AF
+
+- [Philosophers 42 Guide— “The Dining Philosophers Problem”](https://medium.com/@ruinadd/philosophers-42-guide-the-dining-philosophers-problem-893a24bc0fe2)
