@@ -6,48 +6,25 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 01:14:44 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/10/31 15:26:40 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/11/08 13:06:11 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-bool	try_lock(t_ctrl *ctrl, pthread_mutex_t *lock)
-{
-	int	i;
-
-	i = 0;
-	while (i < MAX_RETRY && is_healthy(ctrl))
-	{
-		if (pthread_mutex_lock(lock) == 0)
-			return (true);
-		usleep(USLEEP_RETRY_INTERVAL);
-		i++;
-	}
-	return (false);
-}
-
-bool	health_check(t_philo *philo)
-{
-	if (confirm_death(philo, philo->ctrl->config.time_to_die)
-		|| !is_healthy(philo->ctrl))
-		return (false);
-	return (true);
-}
-
 static void	nap(t_philo *philo)
 {
-	if (!health_check(philo))
+	if (!self_health_check(philo))
 		return ;
-	display_philo_msg(philo, MSG_SLEEP);
-	philo_sleep(philo->ctrl, philo->ctrl->config.time_to_sleep);
+	display_message(philo->ctrl, 0, philo->id, MSG_SLEEP);
+	philo_sleep(philo->ctrl, philo->ctrl->time_to_sleep);
 }
 
 static void	think(t_philo *philo)
 {
-	if (!health_check(philo))
+	if (!self_health_check(philo))
 		return ;
-	display_philo_msg(philo, MSG_THINK);
+	display_message(philo->ctrl, 0, philo->id, MSG_THINK);
 }
 
 void	*philo_routine(void *ptr)
@@ -57,7 +34,7 @@ void	*philo_routine(void *ptr)
 	philo = (t_philo *)ptr;
 	if (philo->id % 2 == 0)
 		philo_sleep(philo->ctrl, DELAY);
-	while (health_check(philo))
+	while (self_health_check(philo))
 	{
 		eat(philo);
 		nap(philo);

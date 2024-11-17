@@ -6,30 +6,22 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 01:14:11 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/10/31 01:14:12 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/11/07 16:31:22 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	destroy_mutex_locks(t_ctrl *ctrl)
-{
-	pthread_mutex_destroy(&ctrl->dead_lock);
-	pthread_mutex_destroy(&ctrl->meal_lock);
-	pthread_mutex_destroy(&ctrl->write_lock);
-	pthread_mutex_destroy(&ctrl->error_lock);
-}
-
-void	destroy_mutex_forks(t_ctrl *ctrl)
+void	destroy_mutexes(pthread_mutex_t mutexes[], int size)
 {
 	int	i;
 
-	if (!ctrl->forks)
+	if (!mutexes || size < 1)
 		return ;
 	i = 0;
-	while (i < ctrl->config.num_of_philos)
+	while (i < size)
 	{
-		pthread_mutex_destroy(&ctrl->forks[i]);
+		pthread_mutex_destroy(&mutexes[i]);
 		i++;
 	}
 }
@@ -48,7 +40,24 @@ void	cleanup_memory(t_ctrl *ctrl)
 
 void	cleanup_ctrl(t_ctrl *ctrl)
 {
-	destroy_mutex_locks(ctrl);
-	destroy_mutex_forks(ctrl);
+	destroy_mutexes(ctrl->forks, ctrl->num_of_philos);
+	destroy_mutexes(ctrl->locks, NUM_LOCKS);
 	cleanup_memory(ctrl);
+}
+
+void	cleanup_msg(t_ctrl *ctrl)
+{
+	t_msg	*tmp;
+	t_msg	*next;
+
+	if (!ctrl->msg_queue)
+		return ;
+	tmp = ctrl->msg_queue;
+	while (tmp)
+	{
+		next = tmp->next_msg;
+		xfree(tmp);
+		tmp = next;
+	}
+	ctrl->msg_queue = NULL;
 }
