@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 14:10:39 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/11/08 13:46:36 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/11/18 02:44:17 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ bool	print_error(const char *str)
 	return (write(2, str, ft_strlen(str)) != -1);
 }
 
-static void	print_message(t_msg *msg)
+void	print_message(t_msg *msg)
 {
 	if (!msg)
 		return ;
@@ -41,34 +41,16 @@ static t_msg	*dequeue_msg(t_ctrl *ctrl)
 	return (tmp);
 }
 
-static void	print_leftover(t_ctrl *ctrl)
-{
-	t_msg	*msg;
-	bool	is_died;
-
-	is_died = false;
-	while (true)
-	{
-		msg = dequeue_msg(ctrl);
-		if (!msg)
-			break ;
-		if (!is_died)
-		{
-			print_message(msg);
-			is_died = ft_strncmp(msg->str, MSG_DIE, sizeof(MSG_DIE) - 1) == 0;
-		}
-		xfree(msg);
-	}
-}
-
 void	*print_routine(void *ptr)
 {
 	t_ctrl	*ctrl;
 	t_msg	*msg;
 
 	ctrl = (t_ctrl *)ptr;
-	while (is_healthy(ctrl))
+	while (true)
 	{
+		if (!is_healthy(ctrl))
+			break ;
 		msg = dequeue_msg(ctrl);
 		if (msg)
 		{
@@ -78,6 +60,5 @@ void	*print_routine(void *ptr)
 		}
 		usleep(PRINT_SLEEP_INTERVAL);
 	}
-	print_leftover(ctrl);
 	return (ptr);
 }

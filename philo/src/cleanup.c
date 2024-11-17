@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 01:14:11 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/11/07 16:31:22 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/11/18 02:37:10 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,15 +49,20 @@ void	cleanup_msg(t_ctrl *ctrl)
 {
 	t_msg	*tmp;
 	t_msg	*next;
+	bool	is_died;
 
-	if (!ctrl->msg_queue)
-		return ;
 	tmp = ctrl->msg_queue;
+	ctrl->msg_queue = NULL;
+	is_died = false;
 	while (tmp)
 	{
 		next = tmp->next_msg;
+		if (!is_died)
+		{
+			print_message(tmp);
+			is_died = ft_strncmp(tmp->str, MSG_DIE, sizeof(MSG_DIE) - 1) == 0;
+		}
 		xfree(tmp);
 		tmp = next;
 	}
-	ctrl->msg_queue = NULL;
 }

@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 01:14:41 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/11/08 13:46:14 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/11/18 02:20:29 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,8 +43,9 @@ void	process_eating(t_philo *philo)
 
 static bool	try_eat(t_philo *philo)
 {
-	int	i;
+	bool	result;
 
+	result = false;
 	if (!try_take_fork(philo, philo->right_fork))
 		return (false);
 	if (philo->ctrl->num_of_philos == 1)
@@ -52,20 +53,19 @@ static bool	try_eat(t_philo *philo)
 		philo_sleep(philo->ctrl, philo->ctrl->time_to_die);
 		return (true);
 	}
-	i = 0;
-	while (i < MAX_RETRY)
+	while (self_health_check(philo))
 	{
 		if (try_take_fork(philo, philo->left_fork))
 		{
 			process_eating(philo);
 			pthread_mutex_unlock(philo->left_fork);
+			result = true;
 			break ;
 		}
 		usleep(USLEEP_RETRY_INTERVAL);
-		i++;
 	}
 	pthread_mutex_unlock(philo->right_fork);
-	return (i < MAX_RETRY);
+	return (result);
 }
 
 void	eat(t_philo *philo)

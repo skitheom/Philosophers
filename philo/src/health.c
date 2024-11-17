@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 16:56:38 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/11/08 13:56:27 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/11/18 02:23:25 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,13 +61,10 @@ bool	all_healthy(t_ctrl *ctrl)
 
 bool	is_healthy(t_ctrl *ctrl)
 {
-	bool	lock_success;
-
-	lock_success = false;
-	if (get_error_flag(ctrl, &lock_success) && lock_success)
+	if (get_error_flag(ctrl) || get_dead_flag(ctrl))
+	{
 		return (false);
-	if (get_dead_flag(ctrl, &lock_success) && lock_success)
-		return (false);
+	}
 	return (true);
 }
 

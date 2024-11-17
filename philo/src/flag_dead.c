@@ -6,18 +6,17 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 19:00:23 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/11/07 19:00:26 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/11/18 02:36:08 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-bool	get_dead_flag(t_ctrl *ctrl, bool *lock_success)
+bool	get_dead_flag(t_ctrl *ctrl)
 {
 	bool	dead_state;
 	int		i;
 
-	*lock_success = false;
 	i = 0;
 	while (i < MAX_RETRY)
 	{
@@ -25,7 +24,6 @@ bool	get_dead_flag(t_ctrl *ctrl, bool *lock_success)
 		{
 			dead_state = ctrl->dead_flag;
 			pthread_mutex_unlock(&ctrl->locks[DEAD_LOCK]);
-			*lock_success = true;
 			return (dead_state);
 		}
 		usleep(USLEEP_RETRY_INTERVAL);

@@ -6,18 +6,17 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 18:58:50 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/11/07 18:58:56 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/11/18 02:36:11 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-bool	get_error_flag(t_ctrl *ctrl, bool *lock_success)
+bool	get_error_flag(t_ctrl *ctrl)
 {
 	bool	error_state;
 	int		i;
 
-	*lock_success = false;
 	i = 0;
 	while (i < MAX_RETRY)
 	{
@@ -25,7 +24,6 @@ bool	get_error_flag(t_ctrl *ctrl, bool *lock_success)
 		{
 			error_state = ctrl->error_flag;
 			pthread_mutex_unlock(&ctrl->locks[ERROR_LOCK]);
-			*lock_success = true;
 			return (error_state);
 		}
 		usleep(USLEEP_RETRY_INTERVAL);

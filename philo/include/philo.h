@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 01:13:58 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/11/08 13:52:55 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/11/18 02:21:43 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,11 +68,11 @@ typedef struct s_philo
 # define EXIT_SUCCESS 0
 # define EXIT_FAILURE 1
 
-# define MAX_RETRY 320
-# define USLEEP_RETRY_INTERVAL 1
-# define SUPERVISE_SLEEP_INTERVAL 1000
-# define PRINT_SLEEP_INTERVAL 50000
-# define PHILO_SLEEP_INTERVAL 50
+# define MAX_RETRY 300
+# define USLEEP_RETRY_INTERVAL 100
+# define SUPERVISE_SLEEP_INTERVAL 500
+# define PRINT_SLEEP_INTERVAL 100
+# define PHILO_SLEEP_INTERVAL 100
 # define DELAY 5
 
 # define NUM_LOCKS 4
@@ -115,9 +115,9 @@ bool					set_eat_flag(t_philo *philo, bool state);
 bool					set_eat_flag_on(t_philo *philo,
 							u_int64_t beginning_of_last_meal);
 bool					set_eat_flag_off(t_philo *philo);
-bool					get_dead_flag(t_ctrl *ctrl, bool *lock_success);
+bool					get_dead_flag(t_ctrl *ctrl);
 bool					set_dead_flag_on(t_ctrl *ctrl);
-bool					get_error_flag(t_ctrl *ctrl, bool *lock_success);
+bool					get_error_flag(t_ctrl *ctrl);
 bool					set_error_flag_on(t_ctrl *ctrl);
 
 /* health */
@@ -132,6 +132,7 @@ bool					init_ctrl(t_ctrl *ctrl, const char **argv);
 
 /* print */
 bool					print_error(const char *str);
+void					print_message(t_msg *msg);
 void					*print_routine(void *ptr);
 void					display_message(t_ctrl *ctrl, u_int64_t cur_ts, int id,
 							const char *str);
