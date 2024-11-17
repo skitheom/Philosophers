@@ -6,65 +6,40 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 01:14:35 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/10/31 01:14:36 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/11/18 01:21:52 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-static void	setup_config(t_config *config, int argc, const char **argv)
+static void	setup_values(t_ctrl *ctrl, const char **argv)
 {
-	config->num_of_philos = convert_input_to_num(argv[1]);
-	config->time_to_die = convert_input_to_num(argv[2]);
-	config->time_to_eat = convert_input_to_num(argv[3]);
-	config->time_to_sleep = convert_input_to_num(argv[4]);
-	if (argc == 6 && argv[5])
-		config->num_of_times_to_eat = convert_input_to_num(argv[5]);
+	ctrl->num_of_philos = convert_input_to_num(argv[1]);
+	ctrl->time_to_die = (u_int64_t)convert_input_to_num(argv[2]);
+	ctrl->time_to_eat = convert_input_to_num(argv[3]);
+	ctrl->time_to_sleep = convert_input_to_num(argv[4]);
+	if (argv[5])
+		ctrl->num_of_times_to_eat = convert_input_to_num(argv[5]);
 	else
-		config->num_of_times_to_eat = -1;
+		ctrl->num_of_times_to_eat = -1;
+	ctrl->start_time = 0;
+	ctrl->dead_flag = false;
+	ctrl->error_flag = false;
+	ctrl->msg_queue = NULL;
 }
 
-static bool	init_mutex_locks(t_ctrl *ctrl)
-{
-	if (pthread_mutex_init(&ctrl->dead_lock, NULL) != 0)
-	{
-		return (false);
-	}
-	if (pthread_mutex_init(&ctrl->meal_lock, NULL) != 0)
-	{
-		pthread_mutex_destroy(&ctrl->dead_lock);
-		return (false);
-	}
-	if (pthread_mutex_init(&ctrl->write_lock, NULL) != 0)
-	{
-		pthread_mutex_destroy(&ctrl->dead_lock);
-		pthread_mutex_destroy(&ctrl->meal_lock);
-		return (false);
-	}
-	if (pthread_mutex_init(&ctrl->error_lock, NULL) != 0)
-	{
-		pthread_mutex_destroy(&ctrl->dead_lock);
-		pthread_mutex_destroy(&ctrl->meal_lock);
-		pthread_mutex_destroy(&ctrl->write_lock);
-		return (false);
-	}
-	return (true);
-}
-
-static bool	init_mutex_forks(t_ctrl *ctrl)
+static bool	init_mutexes(pthread_mutex_t mutexes[], int size)
 {
 	int	i;
 
-	if (!ctrl->forks)
+	if (!mutexes || size < 1)
 		return (false);
 	i = 0;
-	while (i < ctrl->config.num_of_philos)
+	while (i < size)
 	{
-		if (pthread_mutex_init(&ctrl->forks[i], NULL) != 0)
+		if (pthread_mutex_init(&mutexes[i], NULL) != 0)
 		{
-			while (--i >= 0)
-				pthread_mutex_destroy(&ctrl->forks[i]);
-			destroy_mutex_locks(ctrl);
+			destroy_mutexes(mutexes, i);
 			return (false);
 		}
 		i++;
@@ -72,16 +47,28 @@ static bool	init_mutex_forks(t_ctrl *ctrl)
 	return (true);
 }
 
+static bool	setup_mutexes(t_ctrl *ctrl)
+{
+	if (!init_mutexes(ctrl->forks, ctrl->num_of_philos))
+		return (false);
+	if (!init_mutexes(ctrl->locks, NUM_LOCKS))
+	{
+		destroy_mutexes(ctrl->forks, ctrl->num_of_philos);
+		return (false);
+	}
+	return (true);
+}
+
 static bool	setup_philos(t_ctrl *ctrl)
 {
-	const size_t	current_time = get_current_time(ctrl);
-	const int		num_of_philos = ctrl->config.num_of_philos;
+	const u_int64_t	current_time = get_current_time();
+	const int		max_philos = ctrl->num_of_philos;
 	int				i;
 
-	if (current_time == SIZE_MAX)
+	if (current_time == 0)
 		return (false);
 	i = 0;
-	while (i < num_of_philos)
+	while (i < max_philos)
 	{
 		ctrl->philos[i].id = i + 1;
 		ctrl->philos[i].eaten_meals_count = 0;
@@ -89,7 +76,7 @@ static bool	setup_philos(t_ctrl *ctrl)
 		ctrl->philos[i].last_meal = current_time;
 		ctrl->philos[i].left_fork = &(ctrl->forks[i]);
 		if (i == 0)
-			ctrl->philos[i].right_fork = &(ctrl->forks[num_of_philos - 1]);
+			ctrl->philos[i].right_fork = &(ctrl->forks[max_philos - 1]);
 		else
 			ctrl->philos[i].right_fork = &(ctrl->forks[i - 1]);
 		ctrl->philos[i].ctrl = ctrl;
@@ -98,14 +85,12 @@ static bool	setup_philos(t_ctrl *ctrl)
 	return (true);
 }
 
-bool	init_ctrl(t_ctrl *ctrl, int argc, const char **argv)
+bool	init_ctrl(t_ctrl *ctrl, const char **argv)
 {
-	setup_config(&ctrl->config, argc, argv);
-	ctrl->philos = malloc(sizeof(t_philo) * ctrl->config.num_of_philos);
-	if (!ctrl->philos)
-		return (false);
-	ctrl->forks = malloc(sizeof(pthread_mutex_t) * ctrl->config.num_of_philos);
-	if (!ctrl->forks || !init_mutex_locks(ctrl) || !init_mutex_forks(ctrl))
+	setup_values(ctrl, argv);
+	ctrl->philos = malloc(sizeof(t_philo) * ctrl->num_of_philos);
+	ctrl->forks = malloc(sizeof(pthread_mutex_t) * ctrl->num_of_philos);
+	if (!ctrl->philos || !ctrl->forks || !setup_mutexes(ctrl))
 	{
 		cleanup_memory(ctrl);
 		return (false);
@@ -115,7 +100,6 @@ bool	init_ctrl(t_ctrl *ctrl, int argc, const char **argv)
 		cleanup_ctrl(ctrl);
 		return (false);
 	}
-	ctrl->dead_flag = false;
-	ctrl->error_flag = false;
-	return (true);
+	ctrl->start_time = get_current_time();
+	return (ctrl->start_time != 0);
 }

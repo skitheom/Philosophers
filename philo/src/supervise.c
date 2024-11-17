@@ -6,85 +6,36 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 01:14:52 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/10/31 02:34:13 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/11/08 13:47:06 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-bool	confirm_death(t_philo *philo, size_t time_to_die)
-{
-	size_t	current_time;
-	bool	is_starving;
-	bool	lock_success;
-
-	if (get_eat_flag(philo, &lock_success)) // TODO: あってる？
-		return (false);
-	is_starving = false;
-	if (try_lock(philo->ctrl, &philo->ctrl->meal_lock))
-	{
-		current_time = get_current_time(philo->ctrl);
-		if (current_time - philo->last_meal >= time_to_die
-			&& current_time != SIZE_MAX)
-			is_starving = true;
-		pthread_mutex_unlock(&philo->ctrl->meal_lock);
-		return (is_starving);
-	}
-	set_error_flag_on(philo->ctrl);
-	return (false);
-}
-
-static bool	all_healthy(t_ctrl *ctrl)
-{
-	t_philo			*philos;
-	const size_t	time_to_die = ctrl->config.time_to_die;
-	const int		num_of_philos = ctrl->config.num_of_philos;
-	int				i;
-
-	philos = ctrl->philos;
-	i = 0;
-	while (i < num_of_philos)
-	{
-		if (confirm_death(&philos[i], time_to_die))
-		{
-			display_philo_msg(&philos[i], MSG_DIE);
-			set_dead_flag_on(ctrl);
-			return (false);
-		}
-		i++;
-	}
-	return (true);
-}
 
 static bool	confirm_hungry(t_philo *philo, int num_of_times_to_eat)
 {
 	bool	is_hungry;
 
 	is_hungry = false;
-	if (try_lock(philo->ctrl, &philo->ctrl->meal_lock))
+	if (try_lock(&philo->ctrl->locks[MEAL_LOCK]))
 	{
 		is_hungry = philo->eaten_meals_count < num_of_times_to_eat;
-		pthread_mutex_unlock(&philo->ctrl->meal_lock);
+		pthread_mutex_unlock(&philo->ctrl->locks[MEAL_LOCK]);
 		return (is_hungry);
 	}
-	set_error_flag_on(philo->ctrl);
 	return (false);
 }
 
 static bool	still_hungry(t_ctrl *ctrl)
 {
-	t_philo		*philos;
-	const int	num_of_times_to_eat = ctrl->config.num_of_times_to_eat;
-	const int	num_of_philos = ctrl->config.num_of_philos;
-	int			i;
+	int	i;
 
-	if (num_of_times_to_eat == -1)
+	if (ctrl->num_of_times_to_eat == -1)
 		return (true);
-	philos = ctrl->philos;
 	i = 0;
-	while (i < num_of_philos)
+	while (i < ctrl->num_of_philos)
 	{
-		if (confirm_hungry(&philos[i], num_of_times_to_eat))
+		if (confirm_hungry(&ctrl->philos[i], ctrl->num_of_times_to_eat))
 			return (true);
 		i++;
 	}
@@ -100,9 +51,8 @@ void	*supervise(void *ptr)
 	while (true)
 	{
 		if (!is_healthy(ctrl) || !all_healthy(ctrl) || !still_hungry(ctrl))
-		{
 			break ;
-		}
+		usleep(SUPERVISE_SLEEP_INTERVAL);
 	}
 	return (ptr);
 }
