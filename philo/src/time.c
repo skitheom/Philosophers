@@ -6,13 +6,12 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 16:10:54 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/11/18 01:22:38 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/11/18 01:23:33 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-// TODO: 呼び出し側でのエラー処理を再確認
 u_int64_t	get_current_time(void)
 {
 	struct timeval	tv;
@@ -34,7 +33,6 @@ u_int64_t	get_elapsed_time(t_ctrl *ctrl)
 	return (current_time - ctrl->start_time);
 }
 
-// TODO: utilじゃなくてphilo routineか、timeに移す
 void	philo_sleep(t_ctrl *ctrl, u_int64_t time_to_sleep)
 {
 	const u_int64_t	start = get_current_time();
