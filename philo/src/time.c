@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 16:10:54 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/11/07 18:52:12 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/11/18 01:22:38 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ u_int64_t	get_current_time(void)
 
 	if (gettimeofday(&tv, NULL) == -1)
 		return (0);
-	return (u_int64_t)(tv.tv_sec * 1000 + tv.tv_usec / 1000);
+	return ((u_int64_t)(tv.tv_sec * 1000 + tv.tv_usec / 1000));
 }
 
 u_int64_t	get_elapsed_time(t_ctrl *ctrl)

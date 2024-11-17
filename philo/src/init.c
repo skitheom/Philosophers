@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 01:14:35 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/11/07 16:53:40 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/11/18 01:21:52 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ static void	setup_values(t_ctrl *ctrl, const char **argv)
 		ctrl->num_of_times_to_eat = convert_input_to_num(argv[5]);
 	else
 		ctrl->num_of_times_to_eat = -1;
-	ctrl->start_time = 0; // 直前にget_current_time();を呼ぶ
+	ctrl->start_time = 0;
 	ctrl->dead_flag = false;
 	ctrl->error_flag = false;
 	ctrl->msg_queue = NULL;
