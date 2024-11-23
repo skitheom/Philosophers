@@ -1,36 +1,41 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   destroy.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/31 01:14:38 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/11/07 16:45:59 by sakitaha         ###   ########.fr       */
+/*   Created: 2024/11/23 18:08:05 by sakitaha          #+#    #+#             */
+/*   Updated: 2024/11/23 18:08:16 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	main(int argc, const char **argv)
+void	destroy_mutexes(pthread_mutex_t mutexes[], int size)
 {
-	t_ctrl	ctrl;
+	int	i;
 
-	if (!validate_argv(argc, argv))
-		return (EXIT_FAILURE);
-	if (!init_ctrl(&ctrl, argv))
+	if (!mutexes || size < 1)
+		return ;
+	i = 0;
+	while (i < size)
 	{
-		print_error(ERR_INIT);
-		return (EXIT_FAILURE);
+		pthread_mutex_destroy(&mutexes[i]);
+		i++;
 	}
-	if (!launch_threads(&ctrl, ctrl.philos))
+}
+
+void	destroy_philo_mutexes(t_philo *philos, int size)
+{
+	int	i;
+
+	if (!philos || size < 1)
+		return ;
+	i = 0;
+	while (i < size)
 	{
-		print_error(ERR_LAUNCH_THREAD);
-		cleanup_msg(&ctrl);
-		cleanup_ctrl(&ctrl);
-		return (EXIT_FAILURE);
+		pthread_mutex_destroy(&philos[i].meal_lock);
+		i++;
 	}
-	cleanup_msg(&ctrl);
-	cleanup_ctrl(&ctrl);
-	return (EXIT_SUCCESS);
 }

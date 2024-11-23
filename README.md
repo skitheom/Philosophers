@@ -63,3 +63,7 @@ https://www.evernote.com/shard/s97/client/snv?noteGuid=76e446df-1c78-45b6-b19b-6
 https://nafuka11.github.io/philosophers-visualizer/
 
 
+### その他
+
+- Linuxでの`fsainitize=thread -g`は`(uname -m) -R  ./philo {ARGV}`
+- コンパイル時に、`$ setarch $(uname -m) -R ./philo {ARGV}`

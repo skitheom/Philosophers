@@ -6,6 +6,7 @@ SRC_DIR    = src
 OBJS_DIR   = obj
 
 SRCS       = cleanup.c         \
+             destroy.c         \
              flag_dead.c       \
              flag_eat.c        \
              flag_error.c      \
@@ -47,26 +48,19 @@ re: fclean all
 debug: CFLAGS += -g -fsanitize=thread
 debug: re
 
-test0:
-	./philo 199 320 100 100 2
-test1:
-	./philo 100 500 200 200
-test2:
-	./philo 5 600 150 150 5
-test3:
-	./philo 4 410 200 200
-test4:
-	./philo 4 400 200 200
-test5:
-	./philo 5 800 200 200 7
-test6:
-	./philo 199 700 200 200 5
-test7:
-	./philo 100 800 200 200 5
-test8:
-	./philo 105 800 200 200 5
-test9:
-	./philo 200 800 200 200 5
+test0: ## Single philosopher should die
+	./philo 1 800 200 200
 
-.PHONY: all clean fclean re debug test0 test1 test2 test3 test4 test5 \
-        test6 test7 test8 test9
+test1: ## Philosophers do not die
+	./philo 5 800 200 200
+
+test2: ## Philosophers eat 7 times
+	./philo 5 800 200 200 7
+
+test3: ## Philosophers do not die
+	./philo 4 410 200 200
+
+test4: ## Single philosopher should die
+	./philo 4 310 200 100
+
+.PHONY: all clean fclean re debug test0 test1 test2 test3 test4

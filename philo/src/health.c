@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 16:56:38 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/11/18 02:23:25 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/11/23 18:29:30 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,10 +32,10 @@ static bool	confirm_death(t_philo *philo)
 	if (get_eat_flag(philo, &lock_success) || !lock_success)
 		return (false);
 	is_starving = false;
-	if (try_lock(&philo->ctrl->locks[MEAL_LOCK]))
+	if (try_lock(&philo->meal_lock))
 	{
 		is_starving = check_starvation(philo->ctrl, philo->last_meal);
-		pthread_mutex_unlock(&philo->ctrl->locks[MEAL_LOCK]);
+		pthread_mutex_unlock(&philo->meal_lock);
 		return (is_starving);
 	}
 	return (false);

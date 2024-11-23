@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 01:13:58 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/11/18 02:21:43 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/11/23 18:26:48 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,11 @@
 # include <string.h>
 # include <sys/time.h>
 # include <unistd.h>
+
+# define NUM_LOCKS 3
+# define DEAD_LOCK 0
+# define ERROR_LOCK 1
+# define MSG_LOCK 2
 
 typedef struct s_msg
 {
@@ -46,7 +51,7 @@ typedef struct s_ctrl
 
 	t_philo				*philos;
 	pthread_mutex_t		*forks;
-	pthread_mutex_t		locks[4];
+	pthread_mutex_t		locks[NUM_LOCKS];
 
 	bool				dead_flag;
 	bool				error_flag;
@@ -55,11 +60,12 @@ typedef struct s_ctrl
 
 typedef struct s_philo
 {
-	pthread_t			thread;
 	int					id;
-	int					eaten_meals_count;
+	pthread_t			thread;
+	pthread_mutex_t		meal_lock;
 	bool				eating;
 	u_int64_t			last_meal;
+	int					eaten_meals_count;
 	pthread_mutex_t		*left_fork;
 	pthread_mutex_t		*right_fork;
 	t_ctrl				*ctrl;
@@ -69,17 +75,11 @@ typedef struct s_philo
 # define EXIT_FAILURE 1
 
 # define MAX_RETRY 300
-# define USLEEP_RETRY_INTERVAL 100
+# define USLEEP_RETRY_INTERVAL 300
 # define SUPERVISE_SLEEP_INTERVAL 500
-# define PRINT_SLEEP_INTERVAL 100
-# define PHILO_SLEEP_INTERVAL 100
-# define DELAY 5
-
-# define NUM_LOCKS 4
-# define DEAD_LOCK 0
-# define MEAL_LOCK 1
-# define MSG_LOCK 2
-# define ERROR_LOCK 3
+# define PRINT_SLEEP_INTERVAL 300
+# define PHILO_SLEEP_INTERVAL 200
+# define DELAY 10
 
 # define ERR_USAGE "Usage: ./philo num_of_philo die eat sleep (num_eating)\n"
 # define ERR_INVALID_INPUT "Error: Invalid input value.\n"
@@ -103,11 +103,14 @@ void					eat(t_philo *philo);
 void					*philo_routine(void *ptr);
 
 /* clean up */
-void					destroy_mutexes(pthread_mutex_t mutexes[], int size);
 void					xfree(void *ptr);
 void					cleanup_memory(t_ctrl *ctrl);
 void					cleanup_ctrl(t_ctrl *ctrl);
 void					cleanup_msg(t_ctrl *ctrl);
+
+/* destroy */
+void					destroy_mutexes(pthread_mutex_t mutexes[], int size);
+void					destroy_philo_mutexes(t_philo *philos, int size);
 
 /* flag */
 bool					get_eat_flag(t_philo *philo, bool *lock_success);
@@ -126,7 +129,7 @@ bool					is_healthy(t_ctrl *ctrl);
 bool					self_health_check(t_philo *philo);
 
 /* init */
-bool					init_ctrl(t_ctrl *ctrl, const char **argv);
+bool					init_ctrl(t_ctrl *ctrl);
 
 /* philo_routine */
 

@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 19:01:10 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/11/08 13:31:46 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/11/23 17:35:43 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,10 @@ bool	get_eat_flag(t_philo *philo, bool *lock_success)
 	i = 0;
 	while (i < MAX_RETRY)
 	{
-		if (pthread_mutex_lock(&philo->ctrl->locks[MEAL_LOCK]) == 0)
+		if (pthread_mutex_lock(&philo->meal_lock) == 0)
 		{
 			eating_state = philo->eating;
-			pthread_mutex_unlock(&philo->ctrl->locks[MEAL_LOCK]);
+			pthread_mutex_unlock(&philo->meal_lock);
 			*lock_success = true;
 			return (eating_state);
 		}
@@ -41,10 +41,10 @@ bool	set_eat_flag(t_philo *philo, bool state)
 	i = 0;
 	while (i < MAX_RETRY)
 	{
-		if (pthread_mutex_lock(&philo->ctrl->locks[MEAL_LOCK]) == 0)
+		if (pthread_mutex_lock(&philo->meal_lock) == 0)
 		{
 			philo->eating = state;
-			pthread_mutex_unlock(&philo->ctrl->locks[MEAL_LOCK]);
+			pthread_mutex_unlock(&philo->meal_lock);
 			return (true);
 		}
 		usleep(USLEEP_RETRY_INTERVAL);
@@ -60,11 +60,11 @@ bool	set_eat_flag_on(t_philo *philo, u_int64_t beginning_of_last_meal)
 	i = 0;
 	while (i < MAX_RETRY)
 	{
-		if (pthread_mutex_lock(&philo->ctrl->locks[MEAL_LOCK]) == 0)
+		if (pthread_mutex_lock(&philo->meal_lock) == 0)
 		{
 			philo->eating = true;
 			philo->last_meal = beginning_of_last_meal;
-			pthread_mutex_unlock(&philo->ctrl->locks[MEAL_LOCK]);
+			pthread_mutex_unlock(&philo->meal_lock);
 			return (true);
 		}
 		usleep(USLEEP_RETRY_INTERVAL);
@@ -80,11 +80,11 @@ bool	set_eat_flag_off(t_philo *philo)
 	i = 0;
 	while (i < MAX_RETRY)
 	{
-		if (pthread_mutex_lock(&philo->ctrl->locks[MEAL_LOCK]) == 0)
+		if (pthread_mutex_lock(&philo->meal_lock) == 0)
 		{
 			philo->eating = false;
 			philo->eaten_meals_count++;
-			pthread_mutex_unlock(&philo->ctrl->locks[MEAL_LOCK]);
+			pthread_mutex_unlock(&philo->meal_lock);
 			return (true);
 		}
 		usleep(USLEEP_RETRY_INTERVAL);

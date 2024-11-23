@@ -6,13 +6,13 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 01:14:41 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/11/18 02:20:29 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/11/23 17:23:55 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-bool	try_take_fork(t_philo *philo, pthread_mutex_t *fork)
+static bool	try_take_fork(t_philo *philo, pthread_mutex_t *fork)
 {
 	if (!try_lock(fork) || !self_health_check(philo))
 		return (false);
@@ -20,7 +20,7 @@ bool	try_take_fork(t_philo *philo, pthread_mutex_t *fork)
 	return (true);
 }
 
-void	process_eating(t_philo *philo)
+static void	process_eating(t_philo *philo)
 {
 	u_int64_t	current_time;
 
@@ -41,6 +41,13 @@ void	process_eating(t_philo *philo)
 	set_eat_flag_off(philo);
 }
 
+static void	single_philo_nap(t_ctrl *ctrl)
+{
+	philo_sleep(ctrl, ctrl->time_to_die);
+	while (is_healthy(ctrl))
+		usleep(USLEEP_RETRY_INTERVAL);
+}
+
 static bool	try_eat(t_philo *philo)
 {
 	bool	result;
@@ -50,7 +57,8 @@ static bool	try_eat(t_philo *philo)
 		return (false);
 	if (philo->ctrl->num_of_philos == 1)
 	{
-		philo_sleep(philo->ctrl, philo->ctrl->time_to_die);
+		single_philo_nap(philo->ctrl);
+		pthread_mutex_unlock(philo->right_fork);
 		return (true);
 	}
 	while (self_health_check(philo))

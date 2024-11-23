@@ -6,25 +6,11 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 01:14:11 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/11/18 02:37:10 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/11/23 18:10:18 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-void	destroy_mutexes(pthread_mutex_t mutexes[], int size)
-{
-	int	i;
-
-	if (!mutexes || size < 1)
-		return ;
-	i = 0;
-	while (i < size)
-	{
-		pthread_mutex_destroy(&mutexes[i]);
-		i++;
-	}
-}
 
 void	xfree(void *ptr)
 {
@@ -42,6 +28,7 @@ void	cleanup_ctrl(t_ctrl *ctrl)
 {
 	destroy_mutexes(ctrl->forks, ctrl->num_of_philos);
 	destroy_mutexes(ctrl->locks, NUM_LOCKS);
+	destroy_philo_mutexes(ctrl->philos, ctrl->num_of_philos);
 	cleanup_memory(ctrl);
 }
 
