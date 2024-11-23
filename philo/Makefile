@@ -22,8 +22,7 @@ SRCS       = cleanup.c         \
              supervise.c       \
              threads.c         \
              time.c            \
-             utils.c           \
-             validate_arg.c
+             utils.c
 
 SRCS       := $(addprefix $(SRC_DIR)/, $(SRCS))
 OBJS       = $(SRCS:$(SRC_DIR)/%.c=$(OBJS_DIR)/%.o)

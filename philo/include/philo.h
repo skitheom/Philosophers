@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 01:13:58 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/11/23 18:26:48 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/11/23 18:53:03 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,8 +131,6 @@ bool					self_health_check(t_philo *philo);
 /* init */
 bool					init_ctrl(t_ctrl *ctrl);
 
-/* philo_routine */
-
 /* print */
 bool					print_error(const char *str);
 void					print_message(t_msg *msg);
@@ -147,16 +145,13 @@ bool					launch_threads(t_ctrl *ctrl, t_philo *philos);
 /* time.c */
 u_int64_t				get_current_time(void);
 u_int64_t				get_elapsed_time(t_ctrl *ctrl);
+void					philo_sleep(t_ctrl *ctrl, u_int64_t time_to_sleep);
 
 /* utils.c */
 int						ft_strncmp(const char *s1, const char *s2, size_t n);
 size_t					ft_strlen(const char *str);
 size_t					ft_strlcpy(char *dest, const char *src, size_t size);
 size_t					ft_strlcat(char *dest, const char *src, size_t size);
-void					philo_sleep(t_ctrl *ctrl, u_int64_t time_to_sleep);
-
-/* validate_arg.c */
 int						convert_input_to_num(const char *str);
-bool					validate_argv(int argc, const char **argv);
 
 #endif

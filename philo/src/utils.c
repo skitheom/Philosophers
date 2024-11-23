@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 01:15:01 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/11/07 18:52:02 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/11/23 18:52:25 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,4 +77,19 @@ size_t	ft_strlcat(char *dest, const char *src, size_t size)
 		dest++;
 	srclen = ft_strlcpy(dest, src, size - destlen);
 	return (destlen + srclen);
+}
+
+int	convert_input_to_num(const char *str)
+{
+	char	*endptr;
+	long	value;
+
+	if (!str || !*str)
+		return (-1);
+	endptr = NULL;
+	errno = 0;
+	value = ft_strtol(str, &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || value > INT_MAX || value < 0)
+		return (-1);
+	return ((int)value);
 }

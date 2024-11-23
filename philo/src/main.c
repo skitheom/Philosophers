@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 01:14:38 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/11/23 18:39:17 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/11/23 18:55:01 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,29 @@
 // {
 // 	system("leaks -q philo");
 // }
+
+static bool	validate_argv(int argc, const char **argv)
+{
+	int	i;
+
+	if (argc != 5 && argc != 6)
+	{
+		print_error(ERR_USAGE);
+		return (false);
+	}
+	i = 1;
+	while (i < argc)
+	{
+		if ((i != 5 && convert_input_to_num(argv[i]) == 0)
+			|| convert_input_to_num(argv[i]) < 0)
+		{
+			print_error(ERR_INVALID_INPUT);
+			return (false);
+		}
+		i++;
+	}
+	return (i == argc);
+}
 
 static void	setup_values(t_ctrl *ctrl, const char **argv)
 {
